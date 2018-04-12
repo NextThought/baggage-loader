@@ -1,15 +1,15 @@
 {
-  "name": "baggage-loader",
+  "name": "@nti/baggage-loader",
   "version": "1.0.0",
   "description": "Webpack loader to automatically require any resources related to the required one",
   "keywords": [
     "webpack",
     "loader"
   ],
-  "homepage": "https://github.com/deepsweet/baggage-loader",
+  "homepage": "https://github.com/jsg2021/baggage-loader",
   "repository": {
     "type": "git",
-    "url": "git://github.com/deepsweet/baggage-loader.git"
+    "url": "git://github.com/jsg2021/baggage-loader.git"
   },
   "author": {
     "name": "Kir Belevich",
@@ -17,11 +17,6 @@
     "url": "https://github.com/deepsweet"
   },
   "main": "index.js",
-  "peerDependencies": {
-    "webpack": "2.x.x || 3.x.x",
-    "loader-utils": "1.x.x",
-    "source-map": "0.x.x"
-  },
   "devDependencies": {
     "eslint": "^4.0.0",
     "jscs": "^3.0.0"
@@ -30,7 +25,10 @@
     "test": "eslint index.js lib/*.js && jscs index.js lib/*.js"
   },
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=6"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.nextthought.com"
+  }
 }
