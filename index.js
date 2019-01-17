@@ -28,32 +28,28 @@ module.exports = function(source, sourceMap) {
 	const hasCommonJS = HAS_COMMONJS.test(sourceString);
 
 	Promise.all(Object.keys(query)
-		.map(filePath => {
+		.map(fileQuery => {
 
-			let varName;
-			let loadersForFile = '';
+			const {
+				loaders,
+				varName: varNameFromQuery,
+			} = query[fileQuery] || {};
 
-			if (typeof query[filePath] === 'object') {
-				const fileConfig = query[filePath];
-				const loaderStringForFile = fileConfig.loaders || '';
-				if (loaderStringForFile) {
-					loadersForFile = loaderStringForFile.replace(/\*/g, '!') + '!';
-				}
+			const varName = applyPlaceholders(varNameFromQuery, srcDirname, srcFilename);
+			const filePath = applyPlaceholders(fileQuery, srcDirname, srcFilename);
+			const fullPath = path.resolve(srcDirpath, filePath);
 
-				varName = applyPlaceholders(fileConfig.varName, srcDirname, srcFilename);
-			}
-
-			filePath = applyPlaceholders(filePath, srcDirname, srcFilename);
+			const loadersForFile = !loaders ? '' : loaders.replace(/\*/g, '!') + '!';
 
 			// @todo support mandatory/optional requires via config
 
 			// check if absoluted from srcDirpath + baggageFile path exists
-			return stat(path.resolve(srcDirpath, filePath))
+			return stat(fullPath)
 				.then(stats => {
 					if (!stats.isFile()) {
 						return;
 					}
-
+					
 					if (hasCommonJS) {
 						let inject = '';
 						if (varName) {
