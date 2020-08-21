@@ -77,9 +77,9 @@ module.exports = function(source, sourceMap) {
             const injections = results.filter(x => typeof x === 'string' && !~sourceString.indexOf(x));
 
 			if (injections.length) {
+				const srcInjection = injections.join('\n');
                 let code = srcInjection + sourceString;
                 let map = void 0;
-				const srcInjection = injections.join('\n');
 
 				// support existing SourceMap
 				// https://github.com/mozilla/source-map#sourcenode
