@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 const loaderUtils = require('loader-utils');
 const SourceMap = require('source-map');
@@ -49,7 +50,7 @@ module.exports = function(source, sourceMap) {
 					if (!stats.isFile()) {
 						return;
 					}
-					
+
 					if (hasCommonJS) {
 						let inject = '';
 						if (varName) {
@@ -71,11 +72,13 @@ module.exports = function(source, sourceMap) {
 					// log a warning/error?
 				});
 		}))
-		.then(results => {
+		.then(async results => {
 
-			const injections = results.filter(x => typeof x === 'string');
+            const injections = results.filter(x => typeof x === 'string' && !~sourceString.indexOf(x));
 
 			if (injections.length) {
+                let code = srcInjection + sourceString;
+                let map = void 0;
 				const srcInjection = injections.join('\n');
 
 				// support existing SourceMap
@@ -93,14 +96,18 @@ module.exports = function(source, sourceMap) {
 
 					const result = node.toStringWithSourceMap({
 						file: currentRequest
-					});
+                    });
 
-					callback(null, result.code, result.map.toJSON());
-					return;
-				}
+                    code = result.code;
+                    map = result.map.toJSON();
+                }
+
+                if (process.env.STORE_BAGGAGE_LOADER_CHANGES) {
+                    await fs.promises.writeFile(srcFilepath, code);
+                }
 
 				// prepend collected inject at the top of file
-				callback(null, srcInjection + sourceString);
+				callback(null, code, map);
 				return;
 			}
 
